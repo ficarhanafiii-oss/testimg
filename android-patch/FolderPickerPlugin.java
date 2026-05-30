@@ -11,6 +11,8 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.BridgeActivity;
+import android.content.ActivityNotFoundException;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import org.json.JSONArray;
@@ -19,12 +21,8 @@ import org.json.JSONObject;
 @CapacitorPlugin(name = "FolderPicker")
 public class FolderPickerPlugin extends Plugin {
 
-    private PluginCall savedCall;
-
-    // Dipanggil dari JS: FolderPicker.pickFolder()
     @PluginMethod
     public void pickFolder(PluginCall call) {
-        savedCall = call;
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -32,18 +30,18 @@ public class FolderPickerPlugin extends Plugin {
     }
 
     @ActivityCallback
-    private void handleFolderResult(PluginCall call, ActivityResult result) {
+    private void handleFolderResult(PluginCall call, androidx.activity.result.ActivityResult result) {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
             call.reject("User batal memilih folder");
             return;
         }
 
         Uri treeUri = result.getData().getData();
-        // Persist permission supaya bisa dipakai lagi
-        getActivity().getContentResolver().takePersistableUriPermission(
-            treeUri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION
-        );
+        try {
+            getActivity().getContentResolver().takePersistableUriPermission(
+                treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+        } catch (Exception e) {}
 
         DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), treeUri);
         if (rootDir == null) { call.reject("Folder tidak valid"); return; }
@@ -51,16 +49,14 @@ public class FolderPickerPlugin extends Plugin {
         try {
             JSONArray files = new JSONArray();
             readDirRecursive(rootDir, "", files);
-
-            JSObject result2 = new JSObject();
-            result2.put("files", files);
-            call.resolve(result2);
+            JSObject ret = new JSObject();
+            ret.put("files", files);
+            call.resolve(ret);
         } catch (Exception e) {
-            call.reject("Error baca folder: " + e.getMessage());
+            call.reject("Error: " + e.getMessage());
         }
     }
 
-    // Baca folder secara rekursif, kembalikan semua file sebagai base64 / text
     private void readDirRecursive(DocumentFile dir, String prefix, JSONArray out) throws Exception {
         for (DocumentFile file : dir.listFiles()) {
             if (file.isDirectory()) {
@@ -69,22 +65,17 @@ public class FolderPickerPlugin extends Plugin {
                 String name = file.getName();
                 String relPath = prefix + name;
                 String mimeType = file.getType() != null ? file.getType() : "";
-
                 boolean isText = mimeType.startsWith("text/")
-                        || name.endsWith(".html") || name.endsWith(".htm")
-                        || name.endsWith(".css") || name.endsWith(".js")
-                        || name.endsWith(".json") || name.endsWith(".svg")
-                        || name.endsWith(".xml");
-
+                    || name.endsWith(".html") || name.endsWith(".htm")
+                    || name.endsWith(".css")  || name.endsWith(".js")
+                    || name.endsWith(".json") || name.endsWith(".svg");
                 try {
                     InputStream is = getContext().getContentResolver().openInputStream(file.getUri());
                     byte[] bytes = readAllBytes(is);
                     is.close();
-
                     JSONObject entry = new JSONObject();
                     entry.put("path", relPath);
                     entry.put("name", name);
-
                     if (isText) {
                         entry.put("type", "text");
                         entry.put("content", new String(bytes, "UTF-8"));
@@ -94,18 +85,16 @@ public class FolderPickerPlugin extends Plugin {
                         entry.put("mime", mimeType);
                     }
                     out.put(entry);
-                } catch (Exception e) {
-                    // Skip file yang tidak bisa dibaca
-                }
+                } catch (Exception e) {}
             }
         }
     }
 
     private byte[] readAllBytes(InputStream is) throws Exception {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
         byte[] chunk = new byte[4096];
         int n;
-        while ((n = is.read(chunk)) != -1) buffer.write(chunk, 0, n);
-        return buffer.toByteArray();
+        while ((n = is.read(chunk)) != -1) buf.write(chunk, 0, n);
+        return buf.toByteArray();
     }
 }
