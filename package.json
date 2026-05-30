@@ -1,0 +1,20 @@
+{
+  "name": "webrunner",
+  "version": "1.0.0",
+  "description": "WebRunner - Native HTML/CSS/JS file launcher",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "sync": "npx cap sync android",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/filesystem": "^6.0.1",
+    "@capacitor/status-bar": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}

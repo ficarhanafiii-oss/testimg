@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NativePrev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <!-- ══════════ LAYAR UTAMA ══════════ -->
+  <div id="screenHome">
+
+    <header class="app-header">
+      <div class="logo-wrap">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5C3 3.89543 3.89543 3 5 3H8.5C9.05228 3 9.5 3.44772 9.5 4V8.5C9.5 9.05228 9.05228 9.5 8.5 9.5H4C3.44772 9.5 3 9.05228 3 8.5V5Z" fill="#7c6aff"/>
+            <path d="M10.5 4C10.5 3.44772 10.9477 3 11.5 3H15C16.1046 3 17 3.89543 17 5V8.5C17 9.05228 16.5523 9.5 16 9.5H11.5C10.9477 9.5 10.5 9.05228 10.5 8.5V4Z" fill="#7c6aff" opacity="0.5"/>
+            <path d="M3 11.5C3 10.9477 3.44772 10.5 4 10.5H8.5C9.05228 10.5 9.5 10.9477 9.5 11.5V16C9.5 16.5523 9.05228 17 8.5 17H5C3.89543 17 3 16.1046 3 15V11.5Z" fill="#7c6aff" opacity="0.5"/>
+            <path d="M10.5 11.5C10.5 10.9477 10.9477 10.5 11.5 10.5H16C16.5523 10.5 17 10.9477 17 11.5V15C17 16.1046 16.1046 17 15 17H11.5C10.9477 17 10.5 16.5523 10.5 16V11.5Z" fill="#a78bfa"/>
+          </svg>
+        </div>
+        <span class="logo-text">NativePrev</span>
+      </div>
+      <div class="version-tag">v1.0</div>
+    </header>
+
+    <main class="main-content">
+      <section class="hero">
+        <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>HTML Preview</div>
+        <h1 class="hero-title">Preview<br/><span class="accent">tanpa browser</span></h1>
+        <p class="hero-desc">Pilih semua file proyekmu sekaligus (HTML + CSS + JS + gambar), langsung tampil seperti app native.</p>
+      </section>
+
+      <section class="mode-section">
+        <p class="section-label">Mode Tampilan</p>
+        <div class="mode-cards">
+          <div class="mode-card active" id="modeFullscreen" onclick="selectMode('fullscreen')">
+            <div class="mode-card-top">
+              <div class="mode-icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M2 2h4M2 2v4M16 2h-4M16 2v4M2 16h4M2 16v-4M16 16h-4M16 16v-4" stroke="#7c6aff" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="mode-check"><div class="mode-check-dot"></div></div>
+            </div>
+            <div>
+              <span class="mode-name">Full Screen</span>
+              <span class="mode-desc">Tanpa status bar</span>
+            </div>
+          </div>
+          <div class="mode-card" id="modeNormal" onclick="selectMode('normal')">
+            <div class="mode-card-top">
+              <div class="mode-icon">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="rgba(238,238,245,0.3)" stroke-width="1.5"/>
+                  <rect x="1" y="1" width="16" height="5" rx="3" fill="rgba(238,238,245,0.1)"/>
+                </svg>
+              </div>
+              <div class="mode-check"><div class="mode-check-dot"></div></div>
+            </div>
+            <div>
+              <span class="mode-name">Normal</span>
+              <span class="mode-desc">Ada status bar</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="recent-section" id="recentSection" style="display:none">
+        <p class="section-label">Terakhir Dibuka</p>
+        <div class="recent-list" id="recentList"></div>
+      </section>
+
+      <section class="action-section">
+        <button class="btn-open" onclick="openFile()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M2.5 5.5A2 2 0 014.5 3.5H8l1.5 2H15.5A2 2 0 0117.5 7.5V14.5A2 2 0 0115.5 16.5H4.5A2 2 0 012.5 14.5V5.5Z" stroke="white" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+            <path d="M10 9.5V13.5M8 11.5L10 9.5L12 11.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Pilih File
+        </button>
+        <p class="btn-hint">Pilih folder proyek — semua aset otomatis terbaca</p>
+      </section>
+    </main>
+
+  </div><!-- /screenHome -->
+
+  <!-- ══════════ LAYAR VIEWER ══════════ -->
+  <div id="screenViewer">
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <div class="tb-btn" onclick="closeViewer()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4L6 9l5 5" stroke="#f0f0f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tb-btn" onclick="reloadViewer()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M3 9a6 6 0 1 0 1.5-3.93M3 5v4h4" stroke="#f0f0f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Iframe -->
+    <iframe id="frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay">
+      <div class="loading-bar-wrap"><div class="loading-bar" id="loadBar"></div></div>
+      <p class="loading-label" id="loadLabel">Memproses file...</p>
+    </div>
+
+  </div><!-- /screenViewer -->
+
+  <div class="toast" id="toast"></div>
+
+
+  <!-- DEBUG — hapus setelah selesai testing -->
+  <div id="debugLog"></div>
+
+  <script>
+  (function(){
+    const log = document.getElementById('debugLog');
+    function addLog(msg, isErr) {
+      log.classList.add('show');
+      const d = document.createElement('div');
+      d.className = isErr ? 'err' : '';
+      d.textContent = (isErr ? '❌ ' : '✅ ') + msg;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    }
+    // Override console
+    const origLog = console.log, origErr = console.error, origWarn = console.warn;
+    console.log = (...a) => { addLog(a.join(' ')); origLog(...a); };
+    console.error = (...a) => { addLog(a.join(' '), true); origErr(...a); };
+    console.warn = (...a) => { addLog('⚠ ' + a.join(' ')); origWarn(...a); };
+    window.onerror = (msg, src, line) => { addLog(msg + ' [' + line + ']', true); };
+    window.onunhandledrejection = (e) => { addLog('Promise: ' + e.reason, true); };
+  })();
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
