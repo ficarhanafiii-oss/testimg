@@ -56,6 +56,10 @@ jobs:
           mkdir -p "$(dirname $DEST)"
           cp android-patch/FolderPickerPlugin.java "$DEST"
 
+      - name: Add documentfile dependency
+        run: |
+          sed -i 's/dependencies {/dependencies {\n    implementation "androidx.documentfile:documentfile:1.0.1"/' android/app/build.gradle
+
       - name: Grant Gradle execute permission
         run: chmod +x android/gradlew
 
