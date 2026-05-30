@@ -50,6 +50,12 @@ jobs:
           mkdir -p "$(dirname $DEST)"
           cp android-patch/MainActivity.java "$DEST"
 
+      - name: Patch FolderPickerPlugin.java
+        run: |
+          DEST="android/app/src/main/java/com/webrunner/app/FolderPickerPlugin.java"
+          mkdir -p "$(dirname $DEST)"
+          cp android-patch/FolderPickerPlugin.java "$DEST"
+
       - name: Grant Gradle execute permission
         run: chmod +x android/gradlew
 
